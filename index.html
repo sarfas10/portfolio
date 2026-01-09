@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Developer - Comic Portfolio</title>
+    <meta name="description"
+        content="Interactive comic book-style portfolio showcasing creative development projects with engaging animations and superhero themes.">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">PORTFOLIO!</div>
+            <div class="nav-links">
+                <a href="#about" class="nav-link" data-color="red">ABOUT</a>
+                <a href="#projects" class="nav-link" data-color="blue">PROJECTS</a>
+                <a href="#skills" class="nav-link" data-color="yellow">SKILLS</a>
+                <a href="#contact" class="nav-link" data-color="green">CONTACT</a>
+            </div>
+            <button class="nav-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+
+        <!-- Floating Character -->
+        <div class="floating-character">
+            <img src="images/hero-image.png" alt="Super Developer" class="character-img">
+        </div>
+
+
+        <!-- Falling Letters -->
+        <div class="falling-letters">
+            <div class="letter letter-p">P</div>
+            <div class="letter letter-o">O</div>
+            <div class="letter letter-w">W</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="hero-content">
+            <div class="speech-bubble hero-bubble">
+                <h1 class="hero-title">
+                    CREATIVE<br>
+                    <span class="hero-title-accent">DEVELOPER</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Bringing stories to life through <strong>interactive experiences</strong> and <strong>heroic
+                        code</strong>!
+                </p>
+            </div>
+
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="scrollToSection('projects')">VIEW PROJECTS!</button>
+                <button class="btn btn-secondary" onclick="scrollToSection('contact')">HIRE ME!</button>
+            </div>
+        </div>
+
+        <!-- Action Lines -->
+        <div class="action-lines"></div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="comic-panel about-panel">
+                <div class="about-content">
+                    <div class="about-text">
+                        <h2 class="section-title">ORIGIN STORY</h2>
+                        <p class="about-description">
+                            Like every great hero, I discovered my powers through adversity. Armed with creativity and
+                            code, I fight bugs and create digital experiences that save the day!
+                        </p>
+                        <p class="about-description">
+                            My superpowers include <strong>Flutter</strong>, <strong>Web Development</strong>, and the
+                            ability to utilize <strong>AI tools</strong> for faster and efficient development.
+                        </p>
+                        <div class="skill-tags">
+                            <span class="skill-tag skill-red">APP DEV</span>
+                            <span class="skill-tag skill-blue">WEB DEV</span>
+                            <span class="skill-tag skill-yellow">AI TOOLS</span>
+                            <span class="skill-tag skill-green">UX/UI</span>
+                        </div>
+                    </div>
+                    <div class="about-image">
+                        <img src="images/profile.png" alt="Creative developer portrait" class="portrait">
+                        <div class="floating-icons">
+                            <div class="icon-float icon-1"><i class="fas fa-code"></i></div>
+                            <div class="icon-float icon-2"><i class="fas fa-lightbulb"></i></div>
+                            <div class="icon-float icon-3"><i class="fas fa-rocket"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title white">HEROIC PROJECTS</h2>
+                <p class="section-subtitle">
+                    Each project is a new adventure, fighting against boring interfaces and saving users from bad
+                    experiences!
+                </p>
+            </div>
+
+            <div class="projects-grid">
+                <div class="project-card" data-gradient="red-orange">
+                    <img src="images/driving_school.png" alt="Driving School Manager project" class="project-image">
+                    <div class="project-content">
+                        <h3 class="project-title">Smart Drive</h3>
+                        <p class="project-description">
+                            A comprehensive cross-platform application for managing driving schools, student scheduling,
+                            and vehicle tracking.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag tech-blue">FLUTTER</span>
+                            <span class="tech-tag tech-yellow">DART</span>
+                            <span class="tech-tag tech-green">FIREBASE</span>
+                        </div>
+                        <button class="btn btn-project btn-red">VIEW PROJECT!</button>
+                    </div>
+                </div>
+
+                <div class="project-card" data-gradient="yellow-green">
+                    <img src="images/shade_solutions.png" alt="Adalaide Shade Solutions project" class="project-image">
+                    <div class="project-content">
+                        <h3 class="project-title">ADALAIDE SHADE SOLUTIONS</h3>
+                        <p class="project-description">
+                            A vibrant promotional website helping businesses find the perfect shade solutions with a
+                            modern, responsive design.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag tech-blue">WORDPRESS</span>
+                            <span class="tech-tag tech-orange">PHP</span>
+                            <span class="tech-tag tech-red">CSS3</span>
+                        </div>
+                        <button class="btn btn-project btn-yellow">VIEW PROJECT!</button>
+                    </div>
+                </div>
+
+                <div class="project-card" data-gradient="blue-purple">
+                    <img src="images/majliz_saas.png" alt="Majliz SaaS project" class="project-image">
+                    <div class="project-content">
+                        <h3 class="project-title">MAJLIZ SAAS</h3>
+                        <p class="project-description">
+                            A powerful SaaS platform for efficient Mahal management, handling memberships, finances, and
+                            administration.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag tech-purple">REACT</span>
+                            <span class="tech-tag tech-blue">NODE.JS</span>
+                            <span class="tech-tag tech-green">MONGODB</span>
+                        </div>
+                        <button class="btn btn-project btn-blue">VIEW PROJECT!</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="more-projects">
+                <button class="btn btn-more">SEE ALL ADVENTURES!</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="skills">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">SUPER POWERS</h2>
+                <p class="section-subtitle">
+                    Every hero needs their arsenal of powers. Here are mine, leveled up through countless battles with
+                    bugs!
+                </p>
+            </div>
+
+            <div class="skills-grid">
+                <div class="skill-category" data-color="red">
+                    <div class="skill-content">
+                        <i class="fas fa-mobile-alt skill-icon"></i>
+                        <h3 class="skill-title">APP DEV</h3>
+                        <div class="skill-list">
+                            <div class="skill-item">FLUTTER</div>
+                            <div class="skill-item">DART</div>
+                            <div class="skill-item">ANDROID</div>
+                            <div class="skill-item">iOS</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skill-category" data-color="blue">
+                    <div class="skill-content">
+                        <i class="fas fa-laptop-code skill-icon"></i>
+                        <h3 class="skill-title">WEB DEV</h3>
+                        <div class="skill-list">
+                            <div class="skill-item">PHP</div>
+                            <div class="skill-item">JAVASCRIPT</div>
+                            <div class="skill-item">HTML5 & CSS3</div>
+                            <div class="skill-item">WORDPRESS</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skill-category" data-color="yellow">
+                    <div class="skill-content">
+                        <i class="fas fa-robot skill-icon"></i>
+                        <h3 class="skill-title">AI TOOLS</h3>
+                        <div class="skill-list">
+                            <div class="skill-item">AI CODING</div>
+                            <div class="skill-item">PROMPT ENG</div>
+                            <div class="skill-item">AUTOMATION</div>
+                            <div class="skill-item">EFFICIENCY</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skill-category" data-color="green">
+                    <div class="skill-content">
+                        <i class="fas fa-tools skill-icon"></i>
+                        <h3 class="skill-title">TOOLS</h3>
+                        <div class="skill-list">
+                            <div class="skill-item">GIT</div>
+                            <div class="skill-item">VS CODE</div>
+                            <div class="skill-item">FIREBASE</div>
+                            <div class="skill-item">FIGMA</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="skills-character">
+                <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200"
+                    alt="Developer superhero with laptop" class="skills-img">
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title white">CALL FOR HELP!</h2>
+                <p class="section-subtitle white">
+                    Need a hero for your next project? Send a signal and I'll be there faster than you can say
+                    "responsive design"!
+                </p>
+            </div>
+
+            <div class="contact-form-wrapper">
+                <div class="speech-bubble contact-bubble">
+                    <form class="contact-form" id="contactForm">
+                        <div class="form-group">
+                            <label class="form-label">YOUR NAME</label>
+                            <input type="text" class="form-input" name="name" placeholder="Enter your hero name..."
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">EMAIL ADDRESS</label>
+                            <input type="email" class="form-input" name="email" placeholder="your@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">YOUR MESSAGE</label>
+                            <textarea class="form-textarea" name="message" rows="5"
+                                placeholder="Tell me about your project adventure..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-submit">SEND MESSAGE!</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fas fa-envelope contact-icon"></i>
+                    <p class="contact-text">hero@portfolio.com</p>
+                </div>
+                <div class="contact-item">
+                    <i class="fab fa-linkedin contact-icon"></i>
+                    <p class="contact-text">/in/creative-hero</p>
+                </div>
+                <div class="contact-item">
+                    <i class="fab fa-github contact-icon"></i>
+                    <p class="contact-text">@creativehero</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <h3 class="footer-title">THE END?</h3>
+                <p class="footer-subtitle">
+                    Actually, this is just the beginning of our adventure together!
+                </p>
+            </div>
+
+            <div class="social-links">
+                <a href="#" class="social-link social-red"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-link social-blue"><i class="fab fa-linkedin"></i></a>
+                <a href="#" class="social-link social-purple"><i class="fab fa-github"></i></a>
+                <a href="#" class="social-link social-green"><i class="fab fa-dribbble"></i></a>
+            </div>
+
+            <p class="footer-copyright">
+                © 2024 Creative Hero Portfolio. All rights reserved. No villains were harmed in the making of this
+                website.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Interactive Villain Game -->
+    <div id="villain-game" class="villain-container">
+        <div class="villain-mover">
+            <div class="hp-bar-container">
+                <div class="hp-bar" id="villain-hp"></div>
+            </div>
+            <div class="villain-wrapper">
+                <div id="villain" class="pixel-villain"></div>
+                <div class="damage-text" id="damage-text"></div>
+            </div>
+        </div>
+        <div class="villain-speech" id="villain-speech">Click to defeat me!</div>
+    </div>
+
+    <!-- Victory Celebration Overlay -->
+    <div id="victory-overlay" class="victory-overlay">
+        <div class="victory-content">
+            <h1 class="victory-title">VICTORY!</h1>
+            <p class="victory-text">The bug has been squashed!</p>
+            <button class="btn btn-primary" onclick="resetVillainGame()">PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div class="toast-content">
+            <i class="toast-icon"></i>
+            <div class="toast-text">
+                <div class="toast-title"></div>
+                <div class="toast-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+
+</html>
