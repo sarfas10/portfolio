@@ -70,6 +70,30 @@ document.addEventListener('DOMContentLoaded', () => {
     revealElements.forEach(el => observer.observe(el));
 
     /* --------------------------------------------------
+       Skill Pills — Staggered Pop Reveal
+    -------------------------------------------------- */
+    const pillRows = document.querySelectorAll('.skill-pill-row');
+
+    const pillObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const pills = entry.target.querySelectorAll('.skill-pill');
+                pills.forEach((pill, i) => {
+                    setTimeout(() => {
+                        pill.classList.add('popped');
+                    }, i * 60);
+                });
+                pillObserver.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.2,
+        rootMargin: '0px 0px -32px 0px'
+    });
+
+    pillRows.forEach(row => pillObserver.observe(row));
+
+    /* --------------------------------------------------
        Contact Form
     -------------------------------------------------- */
     const contactForm = document.getElementById('contactForm');
