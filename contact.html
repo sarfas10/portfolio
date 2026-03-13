@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact — Victor</title>
+    <meta name="description" content="Get in touch with Victor — a creative developer open to freelance and full-time opportunities.">
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- Header / Nav -->
+    <header class="header">
+        <nav class="nav">
+            <a href="index.html" class="nav-brand">
+                <span class="nav-dot"></span>
+                Victor
+            </a>
+            <div class="nav-links" id="navLinks">
+                <a href="resume.html" class="nav-link">Resume</a>
+                <span class="nav-sep">|</span>
+                <a href="projects.html" class="nav-link">Projects</a>
+                <span class="nav-sep">|</span>
+                <a href="contact.html" class="nav-link nav-active">Contact</a>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Contact Page -->
+    <main class="page-main section">
+        <div class="container">
+            <h1 class="section-heading">Contact</h1>
+            <div class="contact-wrapper">
+                <!-- Info Left -->
+                <div class="contact-info reveal">
+                    <p class="contact-intro">Have a project in mind or just want to say hi? I'd love to hear from you.</p>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope contact-icon"></i>
+                        <span>victor@email.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-linkedin contact-icon"></i>
+                        <span>/in/victor-dev</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-github contact-icon"></i>
+                        <span>@victor-dev</span>
+                    </div>
+                </div>
+
+                <!-- Form Right -->
+                <form class="contact-form reveal" id="contactForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="firstName">First Name</label>
+                            <input type="text" id="firstName" class="form-input" name="firstName" placeholder="First name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="lastName">Last Name</label>
+                            <input type="text" id="lastName" class="form-input" name="lastName" placeholder="Last name" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email</label>
+                        <input type="email" id="email" class="form-input" name="email" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="subject">Subject</label>
+                        <input type="text" id="subject" class="form-input" name="subject" placeholder="What's this about?" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="message">Message</label>
+                        <textarea id="message" class="form-textarea" name="message" rows="5" placeholder="Tell me about your project..." required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn" id="submitBtn">Submit</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast" role="alert" aria-live="polite">
+        <div class="toast-content">
+            <i class="toast-icon fas"></i>
+            <div class="toast-text">
+                <div class="toast-title"></div>
+                <div class="toast-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-inner">
+            <p class="footer-name">Victor</p>
+            <div class="footer-links">
+                <a href="https://linkedin.com" class="footer-icon" aria-label="LinkedIn" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://github.com" class="footer-icon" aria-label="GitHub" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="mailto:victor@email.com" class="footer-icon" aria-label="Email"><i class="fas fa-envelope"></i></a>
+            </div>
+            <p class="footer-copy">© 2025 Victor. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
