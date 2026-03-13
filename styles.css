@@ -446,6 +446,29 @@ img {
     line-height: 1.7;
 }
 
+/* Education layout */
+.edu-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 10px;
+}
+
+.edu-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    flex-shrink: 0;
+    border-radius: 6px;
+    margin-top: 2px;
+}
+
+.edu-grade {
+    margin-top: 10px;
+    font-weight: 600;
+    color: var(--grey);
+}
+
 .skill-pill-row {
     display: flex;
     gap: 8px;
