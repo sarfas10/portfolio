@@ -324,9 +324,9 @@ img {
 
 .blob-canvas {
     position: absolute;
-    /* centred on the wrapper, but 140% of its size so orbit trail spans outside */
-    width: 140%;
-    height: 140%;
+    /* centred on the wrapper, but larger so orbit trail spans outside */
+    width: 200%;
+    height: 200%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);

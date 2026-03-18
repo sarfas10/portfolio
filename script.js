@@ -23,7 +23,7 @@
     const easeIn     = t => t * t * t;
 
     // Draw a glossy 3D pebble at (cx,cy) with given radius and wobble amount
-    function drawGlossyBlob(ctx, cx, cy, radius, rotation, globalAlpha, alpha3D, color) {
+    function drawGlossyBlob(ctx, cx, cy, radius, rotation, globalAlpha, alpha3D, color, time = 0, wobbleAmp = 1) {
         ctx.save();
         ctx.globalAlpha = globalAlpha;
         
@@ -36,8 +36,10 @@
         const sides = 50;
         for (let i = 0; i <= sides; i++) {
             const angle = (i / sides) * Math.PI * 2;
-            // Asymmetric drop shape
-            const r = radius * (1 + 0.12 * Math.cos(angle) + 0.08 * Math.sin(2 * angle - 0.5));
+            // Asymmetric drop shape with animated wobble based on time
+            const w1 = 0.12 * wobbleAmp * Math.cos(angle + time);
+            const w2 = 0.08 * wobbleAmp * Math.sin(2 * angle - time * 1.5);
+            const r = radius * (1 + w1 + w2);
             const x = r * Math.cos(angle);
             const y = r * Math.sin(angle);
             if (i === 0) ctx.moveTo(x, y);
@@ -47,7 +49,15 @@
 
         // 2. Base solid color
         ctx.fillStyle = color;
+        
+        // Add subtle drop shadow to make the 3D blob pop
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.18)';
+        ctx.shadowBlur = 14;
+        ctx.shadowOffsetY = 6;
         ctx.fill();
+        
+        // Reset shadow so it doesn't apply to the gloss/highlights
+        ctx.shadowColor = 'transparent';
 
         // 3D Lighting layer
         if (alpha3D > 0) {
@@ -80,21 +90,6 @@
 
             ctx.restore();
 
-            // Inner rim light (very thin stroke on top-left edge aligned to shape)
-            const cos = Math.cos(-rotation);
-            const sin = Math.sin(-rotation);
-            const x0 = -radius * cos - (-radius) * sin;
-            const y0 = -radius * sin + (-radius) * cos;
-            const x1 = radius * cos - radius * sin;
-            const y1 = radius * sin + radius * cos;
-            
-            const rimGrad = ctx.createLinearGradient(x0, y0, x1*0.2, y1*0.2);
-            rimGrad.addColorStop(0, 'rgba(255,255,255,0.85)');
-            rimGrad.addColorStop(1, 'rgba(255,255,255,0)');
-            
-            ctx.lineWidth = radius * 0.08;
-            ctx.strokeStyle = rimGrad;
-            ctx.stroke();
         }
 
         ctx.restore();
@@ -108,195 +103,157 @@
         const color   = wrapper.dataset.color  || '#EBA92B';
         const delay   = parseInt(wrapper.dataset.delay, 10) || 0;
 
-        // Set canvas pixel resolution = 140% of the button, centred on it
+        // Set canvas pixel resolution = 200% of the button, centred on it
         function resize() {
             const bSize   = wrapper.offsetWidth;          // button = wrapper size
-            const cSize   = Math.round(bSize * 1.5);      // canvas 150%
+            const cSize   = Math.round(bSize * 2.0);      // canvas 200% to allow margin orbits
             canvas.width  = cSize;
             canvas.height = cSize;
         }
         resize();
 
-        const ctx     = canvas.getContext('2d');
-        let   raf     = null;
-        let   playing = false;
+        const ctx = canvas.getContext('2d');
+        
+        // Remove flat CSS styling; the canvas handles rendering permanently
+        btn.style.backgroundColor = 'transparent';
+        btn.style.boxShadow       = 'none';
+        btn.style.color           = 'transparent';
+        btn.style.transition      = 'color 0.4s ease, transform 0.22s ease';
 
-        // Ensure buttons have a smooth fade text transition
-        btn.style.transition = 'color 0.4s ease, transform 0.22s ease, box-shadow 0.22s ease';
+        let phase = 'WAITING'; // WAITING -> SPIRAL -> RESTING
+        let phaseStart = 0;
+        let isHover = false;
+        let hoverWobble = 0; // smoothly animates from 0 to 1
+        
+        // Physics state for smooth transitions
+        let blobTime = 0;
+        let lastTs = 0;
+        let currentWobble = 1.0; 
 
-        // ---- Run the full animation sequence ----
-        function play(isHover) {
-            if (playing) return;   // debounce
-            playing = true;
+        const T_SPIRAL = 1200;  // spiral inward from margin
+        const T_SPREAD = 500;   // splashing out from center
+        const heroDelay = 800;
+        const W = canvas.width;
+        const H = canvas.height;
+        const CX = W / 2;
+        const CY = H / 2;
+        const R = wrapper.offsetWidth / 2;
 
-            // Make the button background transparent so canvas shows through
-            btn.style.backgroundColor = 'transparent';
-            btn.style.boxShadow       = 'none';
+        function step(ts) {
+            const delta = ts - (lastTs || ts);
+            lastTs = ts;
+            ctx.clearRect(0, 0, W, H);
             
-            // If on load, hide the text so the ink blob materialises it
-            if (!isHover) {
-                btn.style.color = 'transparent';
+            // Hover easing for water droplet effect
+            if (isHover) {
+                hoverWobble += (1 - hoverWobble) * 0.12;
+            } else {
+                hoverWobble += (0 - hoverWobble) * 0.08;
             }
 
-            const W    = canvas.width;
-            const H    = canvas.height;
-            const CX   = W / 2;
-            const CY   = H / 2;
-            const R    = wrapper.offsetWidth / 2;
+            if (phase === 'WAITING') {
+                blobTime += delta * 0.002;
+                if (ts > phaseStart + heroDelay + delay) {
+                    phase = 'SPIRAL';
+                    phaseStart = ts;
+                }
+            } else if (phase === 'SPIRAL') {
+                blobTime += delta * 0.004;
+                const elapsed = ts - phaseStart;
+                
+                if (elapsed < T_SPIRAL) {
+                    const p       = elapsed / T_SPIRAL;
+                    const ep      = easeIn(p); // accelerates as it falls inward
 
-            // Blob params
-            const T_ORBIT  = isHover ? 320 : 800;   // orbit
-            const T_FALL   = isHover ? 180 : 350;   // spiral quickly into center
-            const T_SPREAD = isHover ? 260 : 450;   // splashing out
-            const T_FADE   = isHover ? 150 : 250;   // canvas alpha-out
+                    // 4 full rotations for a hypnotic motion
+                    const orbitAngle = Math.PI * 2 * p * 4 - Math.PI / 2;
+                    
+                    // Starts from margin (1.4 * R) and collapses to 0 (centre)
+                    const orbitR = R * 1.4 * (1 - ep);
 
-            let startTime = null;
-            let textFadedIn = false;
-
-            function step(ts) {
-                if (!startTime) startTime = ts;
-                const elapsed = ts - startTime;
-
-                ctx.clearRect(0, 0, W, H);
-
-                // --- PHASE 1: ORBIT (Circling the rim) ---
-                if (elapsed < T_ORBIT) {
-                    const p       = elapsed / T_ORBIT;
-                    const ep      = easeInOut(p);
-
-                    // fast spin, lap and a half
-                    const orbitAngle = Math.PI * 2 * p * 1.5 - Math.PI / 2;
-                    const orbitR = R * (1.18 - 0.18 * ep);
-
-                    // ink starts as tiny drop, builds up
-                    const blobR  = R * 0.12 + R * 0.16 * ep;
+                    // Shrinks while traveling: starts thick, shrinks to tiny 0.05*R at centre
+                    const blobR  = R * 0.35 * (1 - p) + R * 0.05 * p;
 
                     const bx = CX + orbitR * Math.cos(orbitAngle);
                     const by = CY + orbitR * Math.sin(orbitAngle);
 
-                    // Dim glow trail
+                    // Dim glow trail linking to center
                     ctx.save();
-                    ctx.globalAlpha = 0.03 * ep;
+                    ctx.globalAlpha = 0.04 * (1 - p);
                     ctx.fillStyle   = color;
                     ctx.beginPath();
                     ctx.arc(CX, CY, R, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.restore();
 
-                    // Main blob (3D glossy)
-                    drawGlossyBlob(ctx, bx, by, blobR, orbitAngle, 1, 1, color);
-                    // Tiny trailer droplet
-                    const tailAng = orbitAngle - 0.22;
-                    const tx = CX + orbitR * Math.cos(tailAng);
-                    const ty = CY + orbitR * Math.sin(tailAng);
-                    drawGlossyBlob(ctx, tx, ty, blobR * 0.4, orbitAngle, 0.9, 0.8, color);
+                    // Main blob
+                    drawGlossyBlob(ctx, bx, by, blobR, orbitAngle, 1, 1, color, blobTime, 1);
+                    
+                    // Tiny trailer droplet following the spiral
+                    const tailAng = orbitAngle - 0.25;
+                    const tx = CX + (orbitR * 1.05) * Math.cos(tailAng);
+                    const ty = CY + (orbitR * 1.05) * Math.sin(tailAng);
+                    drawGlossyBlob(ctx, tx, ty, blobR * 0.6, orbitAngle, 0.8, 0.8, color, blobTime, 1);
 
-                // --- PHASE 2: FALL (drop dives into centre) ---
-                } else if (elapsed < T_ORBIT + T_FALL) {
-                    const p   = (elapsed - T_ORBIT) / T_FALL;
-                    const ep  = easeIn(p);
-
-                    const startAngle = Math.PI * 2 * 1.5 - Math.PI / 2;
-                    const orbitAngle = startAngle + Math.PI * 0.6 * ep;
-
-                    // dives sharply from rim to centre
-                    const orbitR = R * (1.0 - ep);
-                    const blobR  = R * 0.28 + R * 0.25 * ep;        
-
-                    const bx = CX + orbitR * Math.cos(orbitAngle);
-                    const by = CY + orbitR * Math.sin(orbitAngle);
-
-                    ctx.save();
-                    ctx.globalAlpha = ep * 0.3 + 0.04;
-                    ctx.fillStyle   = color;
-                    ctx.beginPath();
-                    ctx.arc(CX, CY, R, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.restore();
-
-                    drawGlossyBlob(ctx, bx, by, blobR, orbitAngle * 2, 1, 1, color);
-
-                // --- PHASE 3: SPREAD (splashes out to fill circle) ---
-                } else if (elapsed < T_ORBIT + T_FALL + T_SPREAD) {
-                    const p   = (elapsed - T_ORBIT - T_FALL) / T_SPREAD;
+                } else if (elapsed < T_SPIRAL + T_SPREAD) {
+                    const p   = (elapsed - T_SPIRAL) / T_SPREAD;
                     const ep  = easeOut(p);
 
                     // At midway of spread, make the button text appear
-                    if (!isHover && p > 0.3 && !textFadedIn) {
+                    if (p > 0.3 && btn.style.color === 'transparent') {
                         btn.style.color = '#FFFFFF';
-                        textFadedIn = true;
                     }
 
-                    const blobR  = R * 0.53 + R * 0.70 * ep;
-                    const spin   = Math.PI * p * 2.5;
-
-                    // Fade out the 3D gloss as it fills the circle to match the flat UI seamlessly
-                    const alpha3D = 1 - Math.pow(p, 1.5);
-
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.arc(CX, CY, R, 0, Math.PI * 2);
-                    ctx.clip();
-                    drawGlossyBlob(ctx, CX, CY, blobR, spin, 1, alpha3D, color);
-                    ctx.restore();
-
-                // --- PHASE 4: FADE (seamless CSS transition back) ---
-                } else if (elapsed < T_ORBIT + T_FALL + T_SPREAD + T_FADE) {
-                    const p  = (elapsed - T_ORBIT - T_FALL - T_SPREAD) / T_FADE;
-                    const ep = easeOut(p);
-                    const alpha = 1 - ep;
+                    // Spread outward filling the circular rim
+                    const blobR  = R * 0.05 + R * 0.95 * ep;
                     
-                    if (!isHover && !textFadedIn) {
-                        btn.style.color = '#FFFFFF';
-                        textFadedIn = true;
-                    }
+                    // Keep spinning as it spreads 
+                    const startSpreadAng = Math.PI * 2 * 4 - Math.PI / 2;
+                    const spin   = startSpreadAng + Math.PI * p * 2.5;
 
-                    // Pre-apply to button so the layer beneath the fading canvas is complete
-                    btn.style.backgroundColor = color;
-                    btn.style.boxShadow       = '';
+                    // Fade wobble down to 0.15 so the ending frame is organic, not a sterile circle
+                    const wobble = 0.15 + 0.85 * (1.0 - Math.pow(p, 1.5));
 
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.arc(CX, CY, R, 0, Math.PI * 2);
-                    ctx.clip();
-                    ctx.globalAlpha = alpha;
-                    ctx.fillStyle   = color;
-                    ctx.fill();
-                    ctx.restore();
+                    drawGlossyBlob(ctx, CX, CY, blobR, spin, 1, 1, color, blobTime, wobble);
 
-                // --- DONE ---
                 } else {
-                    ctx.clearRect(0, 0, W, H);
-                    btn.style.backgroundColor = color;
-                    btn.style.boxShadow       = '';
-                    if (!isHover) {
-                        btn.style.color = ''; // clear overriding style so CSS var(--white) remains active
-                    }
-                    playing = false;
-                    return;
+                    phase = 'RESTING';
+                    currentWobble = 0.15; // Lock to exactly 0.15 to match the final frame smoothly
                 }
+            } else if (phase === 'RESTING') {
+                // Wobble stays at a gentle 0.15 breathing state unless hovered
+                const targetWobble = isHover ? 0.8 : 0.15; 
+                currentWobble += (targetWobble - currentWobble) * 0.1;
+                
+                // Time advances incredibly slowly when resting (organic breath), speeds up when hovered
+                const speed = 0.001 + 0.003 * currentWobble;
+                blobTime += delta * speed;
 
-                raf = requestAnimationFrame(step);
+                if (btn.style.color === 'transparent') {
+                    btn.style.color = '#FFFFFF';
+                }
+                
+                // Perfectly matches the exact state at the end of the loading animation
+                const blobScale = 1.0 + 0.05 * hoverWobble;
+                const blobR = R * blobScale;
+                
+                drawGlossyBlob(ctx, CX, CY, blobR, 0, 1, 1, color, blobTime, currentWobble);
             }
 
-            raf = requestAnimationFrame(step);
+            requestAnimationFrame(step);
         }
 
-        const heroDelay = 800; // time offset before load anim plays
-        setTimeout(() => {
-            play(false);
-        }, heroDelay + delay);
+        requestAnimationFrame((ts) => {
+            phaseStart = ts;
+            step(ts);
+        });
 
         wrapper.addEventListener('mouseenter', () => {
-            if (playing) {
-                cancelAnimationFrame(raf);
-                playing = false;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                btn.style.backgroundColor = color;
-                btn.style.boxShadow       = '';
-                btn.style.color           = ''; // remove transparent color lock
-            }
-            play(true);
+            isHover = true;
+        });
+        
+        wrapper.addEventListener('mouseleave', () => {
+            isHover = false;
         });
     }
 
