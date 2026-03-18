@@ -134,10 +134,9 @@ img {
 
 .nav-dot {
     display: inline-block;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--yellow);
+    width: 28px;
+    height: 28px;
+    background: transparent;
     flex-shrink: 0;
     transition: transform var(--transition);
 }

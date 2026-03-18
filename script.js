@@ -257,9 +257,57 @@
         });
     }
 
+    function setupNavBlob() {
+        const canvas = document.querySelector('canvas.nav-dot');
+        const brand = document.querySelector('.nav-brand');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const color = '#EBA92B'; // var(--yellow)
+        const R = 9.5; // Optics for larger dot inside a 28px hit area
+        const CX = canvas.width / 2;
+        const CY = canvas.height / 2;
+        
+        let blobTime = 0;
+        let lastTs = 0;
+        let isHover = false;
+        let hoverWobble = 0;
+        let currentWobble = 0.15;
+
+        if (brand) {
+            brand.addEventListener('mouseenter', () => isHover = true);
+            brand.addEventListener('mouseleave', () => isHover = false);
+        }
+
+        function step(ts) {
+            const delta = ts - (lastTs || ts);
+            lastTs = ts;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (isHover) {
+                hoverWobble += (1 - hoverWobble) * 0.15;
+            } else {
+                hoverWobble += (0 - hoverWobble) * 0.1;
+            }
+            
+            const targetWobble = isHover ? 0.9 : 0.15;
+            currentWobble += (targetWobble - currentWobble) * 0.15;
+            
+            const speed = 0.002 + 0.004 * currentWobble;
+            blobTime += delta * speed;
+            
+            const blobR = R * (1 + 0.08 * hoverWobble);
+            
+            drawGlossyBlob(ctx, CX, CY, blobR, 0, 1, 1, color, blobTime, currentWobble);
+            requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
+
     // Wait for DOM
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.blob-wrapper').forEach(setupBlobCanvas);
+        setupNavBlob();
     });
 })();
 
