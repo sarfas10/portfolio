@@ -306,6 +306,39 @@ img {
     gap: 16px;
     flex-wrap: wrap;
     animation: fadeUp 0.7s 0.2s ease both;
+    /* allow orbiting ink blob to extend outside button bounds */
+    overflow: visible;
+}
+
+/* Blob wrapper — positions canvas exactly over the circle button */
+.blob-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 110px;
+    height: 110px;
+    /* allow orbiting blob to show outside the button rim */
+    overflow: visible;
+}
+
+.blob-canvas {
+    position: absolute;
+    /* centred on the wrapper, but 140% of its size so orbit trail spans outside */
+    width: 140%;
+    height: 140%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    /* NO border-radius — we clip via the canvas clip path in JS, not CSS */
+    z-index: 1;
+}
+
+.blob-wrapper .cta-btn {
+    position: relative;
+    z-index: 2;
+    /* background is now drawn by canvas during animation, then restored */
 }
 
 .cta-btn {
@@ -379,6 +412,11 @@ img {
         width: 90px;
         height: 90px;
         font-size: 0.8rem;
+    }
+
+    .blob-wrapper {
+        width: 90px;
+        height: 90px;
     }
 }
 
