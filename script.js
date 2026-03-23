@@ -18,15 +18,15 @@
 ============================================================ */
 (function () {
     // Easing helpers
-    const easeInOut  = t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-    const easeOut    = t => 1 - Math.pow(1 - t, 3);
-    const easeIn     = t => t * t * t;
+    const easeInOut = t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    const easeOut = t => 1 - Math.pow(1 - t, 3);
+    const easeIn = t => t * t * t;
 
     // Draw a glossy 3D pebble at (cx,cy) with given radius and wobble amount
     function drawGlossyBlob(ctx, cx, cy, radius, rotation, globalAlpha, alpha3D, color, time = 0, wobbleAmp = 1) {
         ctx.save();
         ctx.globalAlpha = globalAlpha;
-        
+
         // Move to centre of drop
         ctx.translate(cx, cy);
         ctx.rotate(rotation);
@@ -49,13 +49,13 @@
 
         // 2. Base solid color
         ctx.fillStyle = color;
-        
+
         // Add subtle drop shadow to make the 3D blob pop
         ctx.shadowColor = 'rgba(0, 0, 0, 0.18)';
         ctx.shadowBlur = 14;
         ctx.shadowOffsetY = 6;
         ctx.fill();
-        
+
         // Reset shadow so it doesn't apply to the gloss/highlights
         ctx.shadowColor = 'transparent';
 
@@ -75,7 +75,7 @@
             shadowGrad.addColorStop(0.6, 'rgba(0,0,0,0)');
             shadowGrad.addColorStop(1, 'rgba(0,0,0,0.5)');
             ctx.fillStyle = shadowGrad;
-            ctx.fillRect(-radius*2, -radius*2, radius*4, radius*4);
+            ctx.fillRect(-radius * 2, -radius * 2, radius * 4, radius * 4);
 
             // Bright glossy crescent highlight at top-left
             const glossGrad = ctx.createRadialGradient(
@@ -86,7 +86,7 @@
             glossGrad.addColorStop(0.2, 'rgba(255,255,255,0.3)');
             glossGrad.addColorStop(0.5, 'rgba(255,255,255,0)');
             ctx.fillStyle = glossGrad;
-            ctx.fillRect(-radius*2, -radius*2, radius*4, radius*4);
+            ctx.fillRect(-radius * 2, -radius * 2, radius * 4, radius * 4);
 
             ctx.restore();
 
@@ -96,39 +96,39 @@
     }
 
     function setupBlobCanvas(wrapper) {
-        const canvas  = wrapper.querySelector('.blob-canvas');
-        const btn     = wrapper.querySelector('.cta-btn');
+        const canvas = wrapper.querySelector('.blob-canvas');
+        const btn = wrapper.querySelector('.cta-btn');
         if (!canvas || !btn) return;
 
-        const color   = wrapper.dataset.color  || '#EBA92B';
-        const delay   = parseInt(wrapper.dataset.delay, 10) || 0;
+        const color = wrapper.dataset.color || '#EBA92B';
+        const delay = parseInt(wrapper.dataset.delay, 10) || 0;
 
         // Set canvas pixel resolution = 200% of the button, centred on it
         function resize() {
-            const bSize   = wrapper.offsetWidth;          // button = wrapper size
-            const cSize   = Math.round(bSize * 2.0);      // canvas 200% to allow margin orbits
-            canvas.width  = cSize;
+            const bSize = wrapper.offsetWidth;          // button = wrapper size
+            const cSize = Math.round(bSize * 2.0);      // canvas 200% to allow margin orbits
+            canvas.width = cSize;
             canvas.height = cSize;
         }
         resize();
 
         const ctx = canvas.getContext('2d');
-        
+
         // Remove flat CSS styling; the canvas handles rendering permanently
         btn.style.backgroundColor = 'transparent';
-        btn.style.boxShadow       = 'none';
-        btn.style.color           = 'transparent';
-        btn.style.transition      = 'color 0.4s ease, transform 0.22s ease';
+        btn.style.boxShadow = 'none';
+        btn.style.color = 'transparent';
+        btn.style.transition = 'color 0.4s ease, transform 0.22s ease';
 
         let phase = 'WAITING'; // WAITING -> SPIRAL -> RESTING
         let phaseStart = 0;
         let isHover = false;
         let hoverWobble = 0; // smoothly animates from 0 to 1
-        
+
         // Physics state for smooth transitions
         let blobTime = 0;
         let lastTs = 0;
-        let currentWobble = 1.0; 
+        let currentWobble = 1.0;
 
         const T_SPIRAL = 1200;  // spiral inward from margin
         const T_SPREAD = 500;   // splashing out from center
@@ -143,7 +143,7 @@
             const delta = ts - (lastTs || ts);
             lastTs = ts;
             ctx.clearRect(0, 0, W, H);
-            
+
             // Hover easing for water droplet effect
             if (isHover) {
                 hoverWobble += (1 - hoverWobble) * 0.12;
@@ -160,19 +160,19 @@
             } else if (phase === 'SPIRAL') {
                 blobTime += delta * 0.004;
                 const elapsed = ts - phaseStart;
-                
+
                 if (elapsed < T_SPIRAL) {
-                    const p       = elapsed / T_SPIRAL;
-                    const ep      = easeIn(p); // accelerates as it falls inward
+                    const p = elapsed / T_SPIRAL;
+                    const ep = easeIn(p); // accelerates as it falls inward
 
                     // 4 full rotations for a hypnotic motion
                     const orbitAngle = Math.PI * 2 * p * 4 - Math.PI / 2;
-                    
+
                     // Starts from margin (1.4 * R) and collapses to 0 (centre)
                     const orbitR = R * 1.4 * (1 - ep);
 
                     // Shrinks while traveling: starts thick, shrinks to tiny 0.05*R at centre
-                    const blobR  = R * 0.35 * (1 - p) + R * 0.05 * p;
+                    const blobR = R * 0.35 * (1 - p) + R * 0.05 * p;
 
                     const bx = CX + orbitR * Math.cos(orbitAngle);
                     const by = CY + orbitR * Math.sin(orbitAngle);
@@ -180,7 +180,7 @@
                     // Dim glow trail linking to center
                     ctx.save();
                     ctx.globalAlpha = 0.04 * (1 - p);
-                    ctx.fillStyle   = color;
+                    ctx.fillStyle = color;
                     ctx.beginPath();
                     ctx.arc(CX, CY, R, 0, Math.PI * 2);
                     ctx.fill();
@@ -188,7 +188,7 @@
 
                     // Main blob
                     drawGlossyBlob(ctx, bx, by, blobR, orbitAngle, 1, 1, color, blobTime, 1);
-                    
+
                     // Tiny trailer droplet following the spiral
                     const tailAng = orbitAngle - 0.25;
                     const tx = CX + (orbitR * 1.05) * Math.cos(tailAng);
@@ -196,8 +196,8 @@
                     drawGlossyBlob(ctx, tx, ty, blobR * 0.6, orbitAngle, 0.8, 0.8, color, blobTime, 1);
 
                 } else if (elapsed < T_SPIRAL + T_SPREAD) {
-                    const p   = (elapsed - T_SPIRAL) / T_SPREAD;
-                    const ep  = easeOut(p);
+                    const p = (elapsed - T_SPIRAL) / T_SPREAD;
+                    const ep = easeOut(p);
 
                     // At midway of spread, make the button text appear
                     if (p > 0.3 && btn.style.color === 'transparent') {
@@ -205,11 +205,11 @@
                     }
 
                     // Spread outward filling the circular rim
-                    const blobR  = R * 0.05 + R * 0.95 * ep;
-                    
+                    const blobR = R * 0.05 + R * 0.95 * ep;
+
                     // Keep spinning as it spreads 
                     const startSpreadAng = Math.PI * 2 * 4 - Math.PI / 2;
-                    const spin   = startSpreadAng + Math.PI * p * 2.5;
+                    const spin = startSpreadAng + Math.PI * p * 2.5;
 
                     // Fade wobble down to 0.15 so the ending frame is organic, not a sterile circle
                     const wobble = 0.15 + 0.85 * (1.0 - Math.pow(p, 1.5));
@@ -222,9 +222,9 @@
                 }
             } else if (phase === 'RESTING') {
                 // Wobble stays at a gentle 0.15 breathing state unless hovered
-                const targetWobble = isHover ? 0.8 : 0.15; 
+                const targetWobble = isHover ? 0.8 : 0.15;
                 currentWobble += (targetWobble - currentWobble) * 0.1;
-                
+
                 // Time advances incredibly slowly when resting (organic breath), speeds up when hovered
                 const speed = 0.001 + 0.003 * currentWobble;
                 blobTime += delta * speed;
@@ -232,11 +232,11 @@
                 if (btn.style.color === 'transparent') {
                     btn.style.color = '#FFFFFF';
                 }
-                
+
                 // Perfectly matches the exact state at the end of the loading animation
                 const blobScale = 1.0 + 0.05 * hoverWobble;
                 const blobR = R * blobScale;
-                
+
                 drawGlossyBlob(ctx, CX, CY, blobR, 0, 1, 1, color, blobTime, currentWobble);
             }
 
@@ -251,7 +251,7 @@
         wrapper.addEventListener('mouseenter', () => {
             isHover = true;
         });
-        
+
         wrapper.addEventListener('mouseleave', () => {
             isHover = false;
         });
@@ -261,13 +261,13 @@
         const canvas = document.querySelector('canvas.nav-dot');
         const brand = document.querySelector('.nav-brand');
         if (!canvas) return;
-        
+
         const ctx = canvas.getContext('2d');
         const color = '#EBA92B'; // var(--yellow)
         const R = 9.5; // Optics for larger dot inside a 28px hit area
         const CX = canvas.width / 2;
         const CY = canvas.height / 2;
-        
+
         let blobTime = 0;
         let lastTs = 0;
         let isHover = false;
@@ -283,21 +283,21 @@
             const delta = ts - (lastTs || ts);
             lastTs = ts;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
+
             if (isHover) {
                 hoverWobble += (1 - hoverWobble) * 0.15;
             } else {
                 hoverWobble += (0 - hoverWobble) * 0.1;
             }
-            
+
             const targetWobble = isHover ? 0.9 : 0.15;
             currentWobble += (targetWobble - currentWobble) * 0.15;
-            
+
             const speed = 0.002 + 0.004 * currentWobble;
             blobTime += delta * speed;
-            
+
             const blobR = R * (1 + 0.08 * hoverWobble);
-            
+
             drawGlossyBlob(ctx, CX, CY, blobR, 0, 1, 1, color, blobTime, currentWobble);
             requestAnimationFrame(step);
         }
@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
        Mobile Nav Toggle
     -------------------------------------------------- */
     const navToggle = document.getElementById('navToggle');
-    const navLinks  = document.getElementById('navLinks');
+    const navLinks = document.getElementById('navLinks');
 
     if (navToggle && navLinks) {
         navToggle.addEventListener('click', () => {
@@ -401,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
        Contact Form
     -------------------------------------------------- */
     const contactForm = document.getElementById('contactForm');
-    const submitBtn   = document.getElementById('submitBtn');
+    const submitBtn = document.getElementById('submitBtn');
 
     if (contactForm && submitBtn) {
         contactForm.addEventListener('submit', async (e) => {
@@ -434,12 +434,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const toast = document.getElementById('toast');
         if (!toast) return;
 
-        const titleEl   = toast.querySelector('.toast-title');
-        const msgEl     = toast.querySelector('.toast-message');
-        const iconEl    = toast.querySelector('.toast-icon');
+        const titleEl = toast.querySelector('.toast-title');
+        const msgEl = toast.querySelector('.toast-message');
+        const iconEl = toast.querySelector('.toast-icon');
 
-        if (titleEl)   titleEl.textContent   = title;
-        if (msgEl)     msgEl.textContent     = message;
+        if (titleEl) titleEl.textContent = title;
+        if (msgEl) msgEl.textContent = message;
 
         // Reset classes
         toast.className = 'toast';
