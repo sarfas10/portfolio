@@ -411,19 +411,39 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.textContent = 'Sending…';
             submitBtn.disabled = true;
 
-            // Simulate async submission (replace with real endpoint as needed)
-            await new Promise(resolve => setTimeout(resolve, 1400));
+            const formData = new FormData(contactForm);
+            
+            try {
+                const response = await fetch(contactForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
 
-            // Reset form
-            contactForm.reset();
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-
-            showToast(
-                'Message Sent!',
-                'Thanks for reaching out. I\'ll get back to you soon.',
-                'success'
-            );
+                if (response.ok) {
+                    contactForm.reset();
+                    showToast(
+                        'Message Sent!',
+                        'Thanks for reaching out. I\'ll get back to you soon.',
+                        'success'
+                    );
+                } else {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Submission failed');
+                }
+            } catch (error) {
+                console.error('Form submission error:', error);
+                showToast(
+                    'Oops!',
+                    'There was a problem sending your message. Please try again.',
+                    'error'
+                );
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
         });
     }
 
