@@ -412,7 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.disabled = true;
 
             const formData = new FormData(contactForm);
-            
+
             try {
                 const response = await fetch(contactForm.action, {
                     method: 'POST',
@@ -482,5 +482,65 @@ document.addEventListener('DOMContentLoaded', () => {
             toast.classList.remove('show');
         }, 4000);
     }
+
+    /* --------------------------------------------------
+       Cinematic Greeting Animation
+    -------------------------------------------------- */
+    function initGreetingAnimation() {
+        const wrapper = document.getElementById('greetingWrapper');
+        if (!wrapper) return;
+
+        const words = [
+            "Hello,", "Hola,", "Bonjour,", "Hallo,", "مرحبا,", "नमस्ते,",
+            "வணக்கம்,", "നമസ്കാരം,", "你好,", "こんにちは,", "안녕하세요,",
+            "Привет,", "Olá,", "Ciao,", "Merhaba,", "Jambo,"
+        ];
+
+        let currentIndex = 0;
+
+        const el1 = document.createElement('h1');
+        el1.className = 'hero-heading greeting-text active';
+        el1.textContent = words[0];
+
+        const el2 = document.createElement('h1');
+        el2.className = 'hero-heading greeting-text';
+        el2.textContent = words[1];
+
+        wrapper.appendChild(el1);
+        wrapper.appendChild(el2);
+
+        let activeEl = el1;
+        let nextEl = el2;
+
+        setInterval(() => {
+            // Animate old element out
+            activeEl.classList.remove('active');
+            activeEl.classList.add('exit');
+
+            // Setup next element instantly
+            currentIndex = (currentIndex + 1) % words.length;
+
+            // Remove transitions briefly to reset position without animating
+            nextEl.style.transition = 'none';
+            nextEl.classList.remove('exit');
+            nextEl.classList.remove('active');
+            nextEl.textContent = words[currentIndex];
+
+            // Force reflow
+            void nextEl.offsetWidth;
+
+            // Restore transitions and animate in
+            nextEl.style.transition = '';
+            nextEl.classList.add('active');
+
+            // Swap pointers
+            const temp = activeEl;
+            activeEl = nextEl;
+            nextEl = temp;
+
+        }, 2800); // Wait 2.8s for each word
+    }
+
+    initGreetingAnimation();
 
 });
